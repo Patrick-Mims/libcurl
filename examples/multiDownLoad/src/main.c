@@ -4,10 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
-/* An array whose elements are pointers to strings */
-
-const char *urls[] =
-{
+const char *urls[] = {
   "microsoft",
   "oracle"
 };
@@ -29,9 +26,11 @@ int main(void)
   /* limit the amount of simultaneous connections curl should allow */
   curl_multi_setopt(message, CURLMOPT_MAXCONNECTS, 10L);
 
+  /*
   for(transfer; transfer < 10; ++transfer) {
     addTransfer(message, transfer);
   }
+  */
 
   return 0;
 }
