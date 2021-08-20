@@ -9,9 +9,9 @@ const char *urls[] = {
   "oracle"
 };
 
-static void addTransfer(CURLM *message, int i)
+static void addTransfer(CURLM *m, int i)
 {
-
+    printf("Transfer: %d\n", i);
 }
 
 int main(void)
@@ -26,11 +26,9 @@ int main(void)
   /* limit the amount of simultaneous connections curl should allow */
   curl_multi_setopt(message, CURLMOPT_MAXCONNECTS, 10L);
 
-  /*
   for(transfer; transfer < 10; ++transfer) {
     addTransfer(message, transfer);
   }
-  */
 
   return 0;
 }
