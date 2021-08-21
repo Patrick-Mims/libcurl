@@ -4,23 +4,27 @@
 #include <string.h>
 #include <unistd.h>
 
-static void addTransfer(CURLM *m, const char *u[])
+#define SIZE 10
+
+static void transfer(CURLM *msg, const char *l[])
 {
   CURL *eh = curl_easy_init();
-  int i = 0;
+  int count = 0;
 
-  u[0] = "https://www.microsoft.com";
-  u[1] = "https://www.apple.com";
-  u[2] = "https://www.oracle.com";
-  u[3] = "https://www.amazon.com";
-  u[4] = "https://www.cisco.com";
-  u[5] = "https://www.ibm.com";
+  l[0] = "https://www.microsoft.com";
+  l[1] = "https://www.apple.com";
+  l[2] = "https://www.oracle.com";
+  l[3] = "https://www.amazon.com";
+  l[4] = "https://www.cisco.com";
+  l[5] = "https://www.ibm.com";
 
-  for (i; i < 10; ++i)
+  for (count; count < SIZE; ++count)
   {
-    curl_easy_setopt(eh, CURLOPT_URL, u[i]);
-    curl_multi_add_handle(m, eh);
+    curl_easy_setopt(eh, CURLOPT_URL, l[count]);
+    curl_multi_add_handle(msg, eh);
   }
+
+  printf("Transfer...\n");
 }
 
 int main(void)
@@ -28,8 +32,7 @@ int main(void)
   CURLM *curl_multi;
   CURLMsg *message;
 
-  /* moved the array inside main */
-  const char *urls[10];
+  const char *list[SIZE];
 
   curl_global_init(CURL_GLOBAL_ALL);
   message = curl_multi_init();
@@ -37,7 +40,7 @@ int main(void)
   /* limit the amount of simultaneous connections curl should allow */
   curl_multi_setopt(message, CURLMOPT_MAXCONNECTS, 10L);
 
-  addTransfer(message, urls);
+  transfer(message, list);
 
   return 0;
 }
