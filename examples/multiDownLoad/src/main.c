@@ -4,21 +4,32 @@
 #include <string.h>
 #include <unistd.h>
 
-const char *urls[] = {
-  "microsoft",
-  "oracle"
-};
-
-static void addTransfer(CURLM *m, int i)
+static void addTransfer(CURLM *m, const char *u[])
 {
-    printf("Transfer: %d\n", i);
+  CURL *eh = curl_easy_init();
+  int i = 0;
+
+  u[0] = "https://www.microsoft.com";
+  u[1] = "https://www.apple.com";
+  u[2] = "https://www.oracle.com";
+  u[3] = "https://www.amazon.com";
+  u[4] = "https://www.cisco.com";
+  u[5] = "https://www.ibm.com";
+
+  for (i; i < 10; ++i)
+  {
+    curl_easy_setopt(eh, CURLOPT_URL, u[i]);
+    curl_multi_add_handle(m, eh);
+  }
 }
 
 int main(void)
 {
-  int transfer = 0;
   CURLM *curl_multi;
   CURLMsg *message;
+
+  /* moved the array inside main */
+  const char *urls[10];
 
   curl_global_init(CURL_GLOBAL_ALL);
   message = curl_multi_init();
@@ -26,9 +37,7 @@ int main(void)
   /* limit the amount of simultaneous connections curl should allow */
   curl_multi_setopt(message, CURLMOPT_MAXCONNECTS, 10L);
 
-  for(transfer; transfer < 10; ++transfer) {
-    addTransfer(message, transfer);
-  }
+  addTransfer(message, urls);
 
   return 0;
 }
