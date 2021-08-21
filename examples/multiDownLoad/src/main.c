@@ -15,30 +15,26 @@ static void transfer(CURLM *msg, const char **l)
   CURL *eh = curl_easy_init();
   int count = 0;
 
-  /*
   l[0] = "https://www.microsoft.com";
   l[1] = "https://www.apple.com";
   l[2] = "https://www.oracle.com";
   l[3] = "https://www.amazon.com";
   l[4] = "https://www.cisco.com";
-  */
+  fflush(stdout);
 
-  //for (count; count <= SIZE; count++)
-  //{
-  // curl_easy_setopt(eh, CURLOPT_VERBOSE, 1);
-  //curl_easy_setopt(eh, CURLOPT_WRITEFUNCTION, callback);
-  //curl_easy_setopt(eh, CURLOPT_URL, *(l + count));
-  //curl_easy_setopt(eh, CURLOPT_URL, *(l + count));
-  //printf("=>%s\n", *(l + count));
-  //curl_easy_setopt(eh, CURLOPT_URL, l[count]);
-  /*
+  for (count; count < SIZE; count++)
+  {
+    curl_easy_setopt(eh, CURLOPT_VERBOSE, 1);
+    //curl_easy_setopt(eh, CURLOPT_WRITEFUNCTION, callback);
+    curl_easy_setopt(eh, CURLOPT_URL, *(l + count));
+    printf("TESTING OUTPUT-> %s\n", *(l + count));
+    /*
     curl_easy_setopt(eh, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(eh, CURLOPT_PRIVATE, l[count]);
     */
-  //curl_multi_add_handle(msg, eh);
-  // }
-
-  printf("Transfer...\n");
+    //curl_multi_add_handle(msg, eh);
+  }
+  printf("White Woman...\n");
 }
 
 int main(void)
