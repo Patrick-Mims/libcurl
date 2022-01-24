@@ -1,25 +1,25 @@
-#cmake_minimum_required(VERSION 3.22)
-#
-#project(main VERSION 1.0)
-#
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
-#
-#include_directories("${PROJECT_BINARY_DIR}")
-#
-#file(GLOB SOURCES "src/*.c")
+cmake_minimum_required(VERSION 3.7...3.22)
 
-#set(CMAKE_CXX_STANDARD 20)
-#set(CMAKE_CXX_STANDARD_REQUIRED NO)
-#set(CMAKE_BUILD_TYPE debug)
-#set(CMAKE_CXX_EXTENSIONS NO)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+  cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
 
-#add_executable(${PROJECT_NAME} ${SOURCES})
+project(main VERSION 1.0 DESCRIPTION "CURL-QUEUE" LANGUAGES C)
 
-cmake_minimum_required(VERSION 3.22)
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-project(main)
+set(SOURCE_FILES src/main.c)
 
-#include_directories("inc")
-set(CURL_LIBRARY "-lcurl")
+add_library(curllib SHARED IMPORTED)
+set_property(TARGET curllib PROPERTY IMPORTED_LOCATION "/usr/local/lib")
+#add_library(curllib -L/usr/local/lib -lcurl SHARED)
 
-add_executable(${PROJECT_NAME} src/main.c)
+#set(CURL_LIBRARY "-lcurl")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I/usr/local/include")
+
+find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIR})
+
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
+target_link_libraries(main -lcurl)
