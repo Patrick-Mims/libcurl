@@ -1,14 +1,23 @@
 #include <stdio.h>
+#include <curl/curl.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define SIZE 30
+#define NUM_URLS
 
 struct node
 {
   char url[SIZE];
   struct node *next;
 };
+
+/*
+static size_t callback(char *data, size_t n, size_t l, void *userp)
+{
+
+}
+*/
 
 static void display(struct node *list)
 {
@@ -18,10 +27,9 @@ static void display(struct node *list)
   {
     printf("%s\n", s->url);
   }
-
 }
 
-struct node insert_node(struct node **list, char *item)
+static struct node insert_node(struct node **list, char *item)
 {
   struct node *new_node = NULL;
 
@@ -38,6 +46,12 @@ struct node insert_node(struct node **list, char *item)
 
 int main(int argc, char **argv)
 {
+  CURLM *multi_curl;
+  CURLMsg *multi_message;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+
+  int count = 0;
   char item[SIZE];
   FILE *fp = NULL;
 
@@ -59,11 +73,14 @@ int main(int argc, char **argv)
   while (fscanf(fp, "%s", item) != EOF)
   {
     insert_node(&head, item);
+    count = count + 1;
   }
 
   fclose(fp);
 
   display(head);
+
+  printf("count: %d\n", count);
 
   return 0;
 }
