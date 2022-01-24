@@ -12,12 +12,11 @@ set(SOURCE_FILES src/main.c)
 
 add_library(curllib SHARED IMPORTED)
 set_property(TARGET curllib PROPERTY IMPORTED_LOCATION "/usr/local/lib")
-#add_library(curllib -L/usr/local/lib -lcurl SHARED)
 
-#set(CURL_LIBRARY "-lcurl")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I/usr/local/include")
 
 find_package(CURL REQUIRED)
+
 include_directories(${CURL_INCLUDE_DIR})
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
