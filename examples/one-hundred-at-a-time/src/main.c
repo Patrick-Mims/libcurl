@@ -6,6 +6,13 @@
 #define SIZE 50
 #define NUM_URLS
 
+/*
+#define CURLM *cm
+#define CURL *curl
+*/
+
+#define INTERFACE(x) ((x) == (0) ? CURL : CURLM)
+
 struct node
 {
   char url[SIZE];
@@ -41,9 +48,14 @@ struct node
    }
    */
 
-void curl_multi(CURLM *multi, char *str)
+void curl_multi(CURLM *multi, struct node *list)
 {
+    struct node *m = NULL;
 
+    for(m = list; m != NULL; m = m->next)
+    {
+//      printf("going here->%s\n", m->url);
+    }
 }
 
 void curl_easy(CURL *easy, const char *str)
@@ -70,7 +82,7 @@ void curl_easy(CURL *easy, const char *str)
     printf("SUCCESS!\n");
   }
 
-  curl_easy_cleanup(curl);
+  curl_easy_cleanup(easy);
 }
 
 void insert_node(struct node **list, char *item)
@@ -88,9 +100,11 @@ void insert_node(struct node **list, char *item)
 
 int main(int argc, char **argv)
 {
-  CURL *curl;
+  //CURL *curl;
+  CURLM *cm;
 
-  curl = curl_easy_init();
+  //curl = curl_easy_init();
+  cm = curl_multi_init();
 
   int count = 0;
   char item[SIZE];
@@ -105,9 +119,7 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  fp = fopen("companies.txt", "r");
-
-  if(fp == NULL)
+  if((fp = fopen("companies.txt", "r")) == NULL)
   {
     printf("Error!\n");
     exit(1);
@@ -118,12 +130,13 @@ int main(int argc, char **argv)
     insert_node(&head, item);
     count = count + 1;
 
+    /*
     if(count == 1)
     {
       strcat(url, item);
       curl_easy(curl, url);
     }
-    printf("->%s\n", url);
+    */
   }
 
   fclose(fp);
@@ -132,7 +145,8 @@ int main(int argc, char **argv)
 
   printf("count: %d\n", count);
 
-  curl_easy(curl, "https://www.microsoft.com");
+//  curl_easy(curl, "https://www.microsoft.com");
+  curl_multi(cm, head);
 
   return 0;
 }
