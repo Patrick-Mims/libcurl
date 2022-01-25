@@ -13,33 +13,33 @@ struct node
 };
 
 /*
-static size_t callback(char *data, size_t n, size_t l, void *userp)
-{
+   static size_t callback(char *data, size_t n, size_t l, void *userp)
+   {
 
-}
-*/
+   }
+   */
 
 /*
-void display(struct node *list)
-{
-  struct node *p = NULL;
+   void display(struct node *list)
+   {
+   struct node *p = NULL;
 
-  for (p = list; p != NULL; p = p->next)
-  {
-    printf("%s\n", p->url);
-  }
-}
+   for (p = list; p != NULL; p = p->next)
+   {
+   printf("%s\n", p->url);
+   }
+   }
 
-d display(struct node *list)
-{
-  struct node *s = NULL;
+   d display(struct node *list)
+   {
+   struct node *s = NULL;
 
-  for(s = list; s != NULL; s = s->next)
-  {
-    printf("%s\n", s->url);
-  }
-}
-*/
+   for(s = list; s != NULL; s = s->next)
+   {
+   printf("%s\n", s->url);
+   }
+   }
+   */
 
 void curl_multi(CURLM *multi, char *str)
 {
@@ -48,6 +48,7 @@ void curl_multi(CURLM *multi, char *str)
 
 void curl_easy(CURL *easy, const char *str)
 {
+  char buffer[1024];
   if(easy == NULL)
   {
     printf("something is wrong with curl_easy()\n");
@@ -60,7 +61,16 @@ void curl_easy(CURL *easy, const char *str)
   curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
 
   if((curl_easy_perform(easy)) == CURLE_OK)
+  {
+    size_t len = strlen(buffer);
+
+    if(len)
+      fprintf(stderr, "%s%s", buffer, ((buffer[len -1] != '\n') ? "\n" : ""));
+
     printf("SUCCESS!\n");
+  }
+
+  curl_easy_cleanup(curl);
 }
 
 void insert_node(struct node **list, char *item)
@@ -70,7 +80,6 @@ void insert_node(struct node **list, char *item)
   if((new_node = malloc(sizeof(struct node))) == NULL)
     exit(EXIT_FAILURE);
 
-  printf("Pushing -> %s\n", item);
   strcpy(new_node->url, item);
 
   new_node->next = *list;
@@ -108,8 +117,13 @@ int main(int argc, char **argv)
   {
     insert_node(&head, item);
     count = count + 1;
-  //strcat(url, item);
-  //curl_easy(curl, url);
+
+    if(count == 1)
+    {
+      strcat(url, item);
+      curl_easy(curl, url);
+    }
+    printf("->%s\n", url);
   }
 
   fclose(fp);
