@@ -41,10 +41,14 @@ d display(struct node *list)
 }
 */
 
-void curl_easy(CURL *curl, char *str)
+void curl_multi(CURLM *multi, char *str)
 {
 
-  if(curl == NULL)
+}
+
+void curl_easy(CURL *easy, const char *str)
+{
+  if(easy == NULL)
   {
     printf("something is wrong with curl_easy()\n");
     exit(EXIT_FAILURE);
@@ -52,14 +56,11 @@ void curl_easy(CURL *curl, char *str)
 
   printf("URL: %s\n", str);
 
-  curl_easy_setopt(curl, CURLOPT_URL, str);
-  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(easy, CURLOPT_URL, str);
+  curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
 
-  if((curl_easy_perform(curl)) == CURLE_OK)
-  {
+  if((curl_easy_perform(easy)) == CURLE_OK)
     printf("SUCCESS!\n");
-  }
-
 }
 
 void insert_node(struct node **list, char *item)
@@ -79,16 +80,15 @@ void insert_node(struct node **list, char *item)
 int main(int argc, char **argv)
 {
   CURL *curl;
-  //CURLcode ret;
-  //CURLMsg *multi_message;
 
   curl = curl_easy_init();
-  //curl_global_init(CURL_GLOBAL_DEFAULT);
 
   int count = 0;
   char item[SIZE];
+  char url[SIZE];
   FILE *fp = NULL;
 
+  strcpy(url,"https://");
   struct node *head = NULL;
 
   if((head = malloc(sizeof(struct node))) == NULL)
@@ -108,12 +108,13 @@ int main(int argc, char **argv)
   {
     insert_node(&head, item);
     count = count + 1;
+  //strcat(url, item);
+  //curl_easy(curl, url);
   }
 
   fclose(fp);
 
   //display(head);
-  //gcc -Wall -o build/main7 src/main.c -lcurl -I~/source-code/curl/include
 
   printf("count: %d\n", count);
 
@@ -121,3 +122,5 @@ int main(int argc, char **argv)
 
   return 0;
 }
+
+//gcc -Wall -o build/main7 src/main.c -lcurl -I~/source-code/curl/include
