@@ -48,28 +48,35 @@ struct node
    }
    */
 
-void curl_multi(CURLM *multi, struct node *list)
+
+static size_t write_callback(char *data, size_t size, size_t nmemb, void *userp)
 {
-    int cnt = 1; // this is temporary, fix buffer overflow later :(
-    struct node *m = NULL;
 
-    m = list;
+}
 
-    do
-    {
-      m = m->next;
-      printf("-> %s\n", m->url);
-      cnt = cnt + 1;
-    } while(cnt < 44);
+void curl_multi(CURL *single_http, CURLM *multi_http, struct node *list)
+{
+  //int i = 1; // this is temporary, fix buffer overflow later :(
+  /* add individual transfers */
+  curl_multi_add_handle(multi_http, single_http);
+  struct node *m = NULL;
+
+  int i = 1;
+
+  for(m = list; i < 2; m = m->next)
+  {
+    printf("going here->%d. %s\n",i, m->url);
 
     /*
-    int i = 1;
-    for(m = list; m != NULL; m = m->next)
-    {
-      printf("going here->%d. %s\n",i, m->url);
-      i = i + 1;
-    }
-    */
+       curl_easy_setopt(single_http, CURLOPT_VERBOSE, 1L);
+       curl_easy_setopt(single_http, CURLOPT_HEADER, 1L);
+       curl_easy_setopt(single_http, CURLOPT_FOLLOWLOCATION, m->url);
+       curl_easy_setopt(single_http, CURLOPT_WRITEFUNCTION, write_callback);
+
+       curl_easy_perform(single_http);
+       */
+    i = i + 1;
+  }
 }
 
 void curl_easy(CURL *easy, const char *str)
@@ -118,11 +125,17 @@ void insert_node(struct node **list, char *item)
 
 int main(int argc, char **argv)
 {
-  //CURL *curl;
-  CURLM *cm;
+  CURL *single_handle;
+  CURLM *multi_handle;
+  //CURLcode *multi_clean;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
 
   //curl = curl_easy_init();
-  cm = curl_multi_init();
+  /* this call must have a matching call to curl_multi_clean() */
+  /* create a multi handle */
+  single_handle = curl_easy_init();
+  multi_handle = curl_multi_init();
 
   int count = 0;
   char item[SIZE];
@@ -167,7 +180,8 @@ int main(int argc, char **argv)
   printf("count: %d\n", count);
 
 //  curl_easy(curl, "https://www.microsoft.com");
-  curl_multi(cm, head);
+  curl_multi(single_handle, multi_handle, head);
+  curl_multi_cleanup(multi_handle);
 
   return 0;
 }
