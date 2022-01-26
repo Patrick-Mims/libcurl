@@ -1,7 +1,6 @@
 amazon.com
 apache.org
 apple.com
-bbc.co.uk
 ca.com
 cbs.com
 cert.org
@@ -13,7 +12,6 @@ ebay.com
 foxnews.com
 fujitsu.com
 google.com
-heise.de
 hotmail.com
 hp.com
 iana.org
@@ -33,13 +31,12 @@ nist.gov
 opensource.org
 oracle.com
 playstation.com
-ripe.net
+sfgate.com
 sky.com
 slashdot.org
 supermicro.com
 symantec.com
 uefa.com
-un.org
 usatoday.com
 wikipedia.org
 wired.com

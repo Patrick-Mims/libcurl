@@ -50,12 +50,26 @@ struct node
 
 void curl_multi(CURLM *multi, struct node *list)
 {
+    int cnt = 1; // this is temporary, fix buffer overflow later :(
     struct node *m = NULL;
 
+    m = list;
+
+    do
+    {
+      m = m->next;
+      printf("-> %s\n", m->url);
+      cnt = cnt + 1;
+    } while(cnt < 44);
+
+    /*
+    int i = 1;
     for(m = list; m != NULL; m = m->next)
     {
-//      printf("going here->%s\n", m->url);
+      printf("going here->%d. %s\n",i, m->url);
+      i = i + 1;
     }
+    */
 }
 
 void curl_easy(CURL *easy, const char *str)
@@ -87,13 +101,17 @@ void curl_easy(CURL *easy, const char *str)
 
 void insert_node(struct node **list, char *item)
 {
+  /* create a new node */
   struct node *new_node = NULL;
 
+  /* allocate memory for the new node. */
   if((new_node = malloc(sizeof(struct node))) == NULL)
     exit(EXIT_FAILURE);
 
-  strcpy(new_node->url, item);
+  /* store data in the node. */
+  strncpy(new_node->url, item, sizeof(new_node->url) - 1);
 
+  /* insert node into the list. */
   new_node->next = *list;
   *list = new_node;
 }
@@ -112,8 +130,11 @@ int main(int argc, char **argv)
   FILE *fp = NULL;
 
   strcpy(url,"https://");
+
+  /* set head to point to the beginning of the list */
   struct node *head = NULL;
 
+  /* initialize to the size of the (struct node) */
   if((head = malloc(sizeof(struct node))) == NULL)
   {
     exit(EXIT_FAILURE);
