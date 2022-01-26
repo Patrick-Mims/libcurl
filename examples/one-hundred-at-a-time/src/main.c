@@ -54,29 +54,58 @@ static size_t write_callback(char *data, size_t size, size_t nmemb, void *userp)
 
 }
 
-void curl_multi(CURL *single_http, CURLM *multi_http, struct node *list)
+void curl_multi(CURL *single_http, CURLM *multi_http, CURLMcode mc, struct node *list)
 {
-  //int i = 1; // this is temporary, fix buffer overflow later :(
-  /* add individual transfers */
-  curl_multi_add_handle(multi_http, single_http);
+  int running = 1;
   struct node *m = NULL;
 
-  int i = 1;
+  m = list;
+  m = m->next;
+
+  printf("TOP OF THE STACK: %s\n", m->url);
+
+  curl_easy_setopt(single_http, CURLOPT_VERBOSE, 1L);
+  curl_easy_setopt(single_http, CURLOPT_HEADER, 1L);
+  curl_easy_setopt(single_http, CURLOPT_FOLLOWLOCATION, m->url);
+  //curl_easy_setopt(single_http, CURLOPT_WRITEFUNCTION, write_callback);
+
+  curl_easy_perform(single_http);
+
+  /* add individual transfers */
+  curl_multi_add_handle(multi_http, single_http);
+
+  /*
+   * Do work here
+   * */
+  do
+  {
+    mc = curl_multi_perform(multi_http, &running);
+
+  } while(running);
+
+  /* cleanup */
+  curl_multi_remove_handle(multi_http, single_http);
+
+  curl_easy_cleanup(single_http);
+  curl_multi_cleanup(multi_http);
+  curl_global_cleanup();
+
+  /*
+  int i = 1; // this is temporary, fix buffer overflow later :(
 
   for(m = list; i < 2; m = m->next)
   {
     printf("going here->%d. %s\n",i, m->url);
 
-    /*
        curl_easy_setopt(single_http, CURLOPT_VERBOSE, 1L);
        curl_easy_setopt(single_http, CURLOPT_HEADER, 1L);
        curl_easy_setopt(single_http, CURLOPT_FOLLOWLOCATION, m->url);
        curl_easy_setopt(single_http, CURLOPT_WRITEFUNCTION, write_callback);
 
        curl_easy_perform(single_http);
-       */
     i = i + 1;
   }
+  */
 }
 
 void curl_easy(CURL *easy, const char *str)
@@ -127,14 +156,18 @@ int main(int argc, char **argv)
 {
   CURL *single_handle;
   CURLM *multi_handle;
+  CURLMcode multi_code;
   //CURLcode *multi_clean;
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   //curl = curl_easy_init();
   /* this call must have a matching call to curl_multi_clean() */
-  /* create a multi handle */
+
+  /* create a easy handle */
   single_handle = curl_easy_init();
+
+  /* init a multi stack */
   multi_handle = curl_multi_init();
 
   int count = 0;
@@ -180,7 +213,7 @@ int main(int argc, char **argv)
   printf("count: %d\n", count);
 
 //  curl_easy(curl, "https://www.microsoft.com");
-  curl_multi(single_handle, multi_handle, head);
+  curl_multi(single_handle, multi_handle, multi_code, head);
   curl_multi_cleanup(multi_handle);
 
   return 0;
