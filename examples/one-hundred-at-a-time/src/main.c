@@ -164,7 +164,7 @@ void insert_node(struct node **list, char *item)
   *list = new_node;
 }
 
-void insert_curl_node(struct queue **curl_list, int num)
+void insert_curl_handle(struct queue **curl_list, CURL *handle)
 {
   CURL *obj = NULL;
   obj = curl_easy_init();
@@ -178,7 +178,7 @@ void insert_curl_node(struct queue **curl_list, int num)
 }
 
 /* the goal of this function is to create a new curl object and pass it to * curl_multi */
-void create_curl_handle()
+CURL *create_curl_handle()
 {
   CURL *new_handle;
   /*
@@ -197,7 +197,7 @@ void create_curl_handle()
 
 int main(int argc, char **argv)
 {
-  // CURL *single_handle;
+  CURL *curl_handle = create_curl_handle();
   CURLM *multi_handle;
   CURLMcode multi_code = 0;
   // CURLcode *multi_clean;
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
   // curl_multi(single_handle, multi_handle, multi_code, head);
   //
   //  curl_multi(insert_curl_node, multi_handle, multi_code, head);
-  insert_curl_node(&curl_head, 1);
+  insert_curl_handle(&curl_head, curl_handle);
 
   curl_multi_cleanup(multi_handle);
 
