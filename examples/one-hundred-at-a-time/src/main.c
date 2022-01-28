@@ -22,6 +22,7 @@ struct node
 struct queue
 {
   CURL *curl_obj;
+  int count;
   struct queue *next;
 };
 
@@ -166,33 +167,36 @@ void insert_node(struct node **list, char *item)
 
 void insert_curl_handle(struct queue **curl_list, CURL *handle)
 {
-  CURL *obj = NULL;
-  obj = curl_easy_init();
+  struct queue *c = NULL;
 
-  if ((obj == curl_easy_init()))
+  if ((c = malloc(sizeof(struct queue))) == NULL)
   {
     exit(EXIT_FAILURE);
   }
 
-  obj = curl_list;
+  c->count++;
+  c->curl_obj = handle;
+  c->next = *curl_list;
+  *curl_list = c;
 }
 
 /* the goal of this function is to create a new curl object and pass it to * curl_multi */
 CURL *create_curl_handle()
 {
-  CURL *new_handle;
-  /*
-    struct node *q = NULL;
-
-    if ((q = malloc(sizeof(struct queue))) == NULL)
-    {
-    }
-
-    CURL *new_handle = NULL;
-    new_handle = curl_easy_init();
-    */
+  CURL *new_handle = NULL;
+  new_handle = curl_easy_init();
 
   return new_handle;
+}
+
+void display_curl_queue(struct queue *curl_list)
+{
+  int i = 0;
+  struct queue *l = NULL;
+  l = curl_list;
+  l = l->next;
+
+  printf("total number of nodes: %d\n", l->count);
 }
 
 int main(int argc, char **argv)
@@ -235,8 +239,6 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  insert_curl_node(&curl_head, 1);
-
   if ((fp = fopen("companies.txt", "r")) == NULL)
   {
     printf("Error!\n");
@@ -267,7 +269,10 @@ int main(int argc, char **argv)
   // curl_multi(single_handle, multi_handle, multi_code, head);
   //
   //  curl_multi(insert_curl_node, multi_handle, multi_code, head);
+  /* insert new node into curl_queue */
   insert_curl_handle(&curl_head, curl_handle);
+
+  display_curl_queue(curl_head);
 
   curl_multi_cleanup(multi_handle);
 
