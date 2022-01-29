@@ -22,6 +22,7 @@ struct node
 struct queue
 {
   CURL *curl_obj;
+  char url[SIZE];
   int count;
   struct queue *next;
 };
@@ -165,8 +166,9 @@ void insert_node(struct node **list, char *item)
   *list = new_node;
 }
 
-void insert_curl_handle(struct queue **curl_list, CURL *handle)
+void insert_curl_handle(struct queue **curl_list, CURL *handle, char *company)
 {
+  static curl_count = 0;
   struct queue *c = NULL;
 
   if ((c = malloc(sizeof(struct queue))) == NULL)
@@ -174,7 +176,15 @@ void insert_curl_handle(struct queue **curl_list, CURL *handle)
     exit(EXIT_FAILURE);
   }
 
-  c->count++;
+  /* */
+  strcpy((*c).url, company);
+  (*c).count = curl_count;
+
+  printf("curl_count -> %d -> %s\n", (*c).count, (*c).url);
+
+  /* increment the counter in struct queue */
+  curl_count = curl_count + 1;
+
   c->curl_obj = handle;
   c->next = *curl_list;
   *curl_list = c;
@@ -191,12 +201,9 @@ CURL *create_curl_handle()
 
 void display_curl_queue(struct queue *curl_list)
 {
-  int i = 0;
-  struct queue *l = NULL;
-  l = curl_list;
-  l = l->next;
-
-  printf("total number of nodes: %d\n", l->count);
+  struct queue *c = NULL;
+  c = curl_list;
+  printf("Total Number of Nodes: %d\n", c->count);
 }
 
 int main(int argc, char **argv)
@@ -270,7 +277,11 @@ int main(int argc, char **argv)
   //
   //  curl_multi(insert_curl_node, multi_handle, multi_code, head);
   /* insert new node into curl_queue */
-  insert_curl_handle(&curl_head, curl_handle);
+  insert_curl_handle(&curl_head, curl_handle, "Apple");
+  insert_curl_handle(&curl_head, curl_handle, "Cisco");
+  insert_curl_handle(&curl_head, curl_handle, "Facebook");
+  insert_curl_handle(&curl_head, curl_handle, "Google");
+  insert_curl_handle(&curl_head, curl_handle, "Microsoft");
 
   display_curl_queue(curl_head);
 
