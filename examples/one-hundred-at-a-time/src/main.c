@@ -6,11 +6,6 @@
 #define SIZE 50
 #define NUM_URLS
 
-/*
-#define CURLM *cm
-#define CURL *curl
-*/
-
 #define INTERFACE(x) ((x) == (0) ? CURL : CURLM)
 
 struct node
@@ -26,42 +21,6 @@ struct queue
   int count;
   struct queue *next;
 };
-
-/*
-   static size_t callback(char *data, size_t n, size_t l, void *userp)
-   {
-
-   }
-   */
-
-/*
-   void display(struct node *list)
-   {
-   struct node *p = NULL;
-
-   for (p = list; p != NULL; p = p->next)
-   {
-   printf("%s\n", p->url);
-   }
-   }
-
-   d display(struct node *list)
-   {
-   struct node *s = NULL;
-
-   for(s = list; s != NULL; s = s->next)
-   {
-   printf("%s\n", s->url);
-   }
-   }
-   */
-
-/*
-static size_t write_callback(char *data, size_t size, size_t nmemb, void *userp)
-{
-
-}
-*/
 
 void curl_multi(CURL *single_http, CURLM *multi_http, CURLMcode mc, struct node *list)
 {
@@ -148,7 +107,6 @@ void curl_easy(CURL *easy, const char *str)
   curl_easy_cleanup(easy);
 }
 
-/* this should be generic to work with curl_handle_function() structure */
 void insert_node(struct node **list, char *item)
 {
   /* create a new node */
@@ -176,13 +134,11 @@ void insert_curl_handle(struct queue **curl_list, CURL *handle, char *company)
     exit(EXIT_FAILURE);
   }
 
-  /* */
   strcpy((*c).url, company);
   (*c).count = curl_count;
 
   printf("curl_count -> %d -> %s\n", (*c).count, (*c).url);
 
-  /* increment the counter in struct queue */
   curl_count = curl_count + 1;
 
   c->curl_obj = handle;
@@ -190,7 +146,7 @@ void insert_curl_handle(struct queue **curl_list, CURL *handle, char *company)
   *curl_list = c;
 }
 
-/* the goal of this function is to create a new curl object and pass it to * curl_multi */
+/* Create a new curl object and pass it to curl_multi() */
 CURL *create_curl_handle()
 {
   CURL *new_handle = NULL;
@@ -256,14 +212,6 @@ int main(int argc, char **argv)
   {
     insert_node(&head, item);
     count = count + 1;
-
-    /*
-    if(count == 1)
-    {
-      strcat(url, item);
-      curl_easy(curl, url);
-    }
-    */
   }
 
   fclose(fp);
@@ -272,10 +220,11 @@ int main(int argc, char **argv)
 
   printf("count: %d\n", count);
 
-  //  curl_easy(curl, "https://www.microsoft.com");
-  // curl_multi(single_handle, multi_handle, multi_code, head);
-  //
-  //  curl_multi(insert_curl_node, multi_handle, multi_code, head);
+  /*
+     curl_multi(single_handle, multi_handle, multi_code, head);
+     curl_multi(insert_curl_node, multi_handle, multi_code, head);
+  */
+
   /* insert new node into curl_queue */
   insert_curl_handle(&curl_head, curl_handle, "Apple");
   insert_curl_handle(&curl_head, curl_handle, "Cisco");
