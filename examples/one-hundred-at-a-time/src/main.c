@@ -1,3 +1,13 @@
+/*
+This is a crazy program
+* curl_easy() only makes an easy call
+* curl_multi() uses the multi interface
+*
+* create_curl_handle() - creates a new curl handle and returns it.
+* insert_curl_handle() - adds a new node to the curl_queue
+* display_curl_queue() - displays the nodes in the curl_queue()
+*/
+
 #include <curl/curl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +31,21 @@ struct queue
   int count;
   struct queue *next;
 };
+
+struct queue *curl_search_queue(struct queue *list, int a)
+{
+  struct queue *q = NULL;
+
+  for (q = list; q != NULL; q = q->next)
+  {
+    if (q->count == a)
+    {
+      return q;
+    }
+  }
+
+  return q;
+}
 
 void curl_multi(CURL *single_http, CURLM *multi_http, CURLMcode mc, struct node *list)
 {
@@ -107,6 +132,7 @@ void curl_easy(CURL *easy, const char *str)
   curl_easy_cleanup(easy);
 }
 
+/* insert a new node into the curl_queue() */
 void insert_node(struct node **list, char *item)
 {
   /* create a new node */
@@ -180,7 +206,7 @@ int main(int argc, char **argv)
   /* init a multi stack */
   multi_handle = curl_multi_init();
 
-  int count = 0;
+  int count = 0, company = 0, cnt = 1;
   char item[SIZE];
   char url[SIZE];
   FILE *fp = NULL;
@@ -221,7 +247,7 @@ int main(int argc, char **argv)
   /*
      curl_multi(insert_curl_node, multi_handle, multi_code, head);
   */
-  curl_multi(curl_handle, multi_handle, multi_code, head);
+  // curl_multi(curl_handle, multi_handle, multi_code, head);
 
   insert_curl_handle(&curl_head, curl_handle, "Apple");
   insert_curl_handle(&curl_head, curl_handle, "Cisco");
@@ -230,6 +256,19 @@ int main(int argc, char **argv)
   insert_curl_handle(&curl_head, curl_handle, "Microsoft");
 
   display_curl_queue(curl_head);
+
+  do
+  {
+    printf("What item would you like to search for? ");
+    scanf("%d", &company);
+
+    struct queue *ret = NULL;
+
+    ret = curl_search_queue(curl_head, company);
+
+    printf("Success -> %s\n", ret->url);
+    cnt = cnt + 1;
+  } while (cnt < 4);
 
   curl_multi_cleanup(multi_handle);
 
