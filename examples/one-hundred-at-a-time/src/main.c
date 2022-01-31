@@ -126,7 +126,7 @@ void insert_node(struct node **list, char *item)
 
 void insert_curl_handle(struct queue **curl_list, CURL *handle, char *company)
 {
-  static curl_count = 0;
+  static int curl_count = 0;
   struct queue *c = NULL;
 
   if ((c = malloc(sizeof(struct queue))) == NULL)
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
   /* this call must have a matching call to curl_multi_clean() */
 
   /* create a easy handle */
-  // single_handle = curl_easy_init();
+  curl_handle = curl_easy_init();
 
   /* init a multi stack */
   multi_handle = curl_multi_init();
@@ -216,16 +216,13 @@ int main(int argc, char **argv)
 
   fclose(fp);
 
-  // display(head);
-
   printf("count: %d\n", count);
 
   /*
-     curl_multi(single_handle, multi_handle, multi_code, head);
      curl_multi(insert_curl_node, multi_handle, multi_code, head);
   */
+  curl_multi(curl_handle, multi_handle, multi_code, head);
 
-  /* insert new node into curl_queue */
   insert_curl_handle(&curl_head, curl_handle, "Apple");
   insert_curl_handle(&curl_head, curl_handle, "Cisco");
   insert_curl_handle(&curl_head, curl_handle, "Facebook");
